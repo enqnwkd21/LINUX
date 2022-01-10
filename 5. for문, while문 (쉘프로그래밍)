@@ -1,0 +1,93 @@
+8. for문
+for 반복변수 in 대상
+do
+   반복할 문장
+done
+
+** 주의
+- 대상은 반드시 이미 선언된 변수일 경우 $변수명 으로 전달
+- for 뒤에 오는 반복변수는 절대 $를 붙이지 않을것!
+
+[ 연습 문제 - for_file_cp.sh ]
+/home/scott/linux/ch8 에서 sh로 끝나는 모든 파일에 대해
+파일사이즈를 확인하고 파일사이즈가 500 이상인 파일에 대해 backup 디렉토리로 복사
+ 
+#!/bin/sh
+
+dir=/home/scott/linux/ch8
+vlist=`ls /home/scott/linux/ch8/*.sh`
+vstart=`date +%Y/%m/%d_%H:%M:%S`
+
+echo "로깅을 시작하겠습니다" | tee -a ${dir}/test.log
+echo "로깅 시작시간 : $vstart" | tee -a ${dir}/test.log
+
+for fname in $vlist
+do
+  fsize=`ls -l $fname | cut -d" " -f5`
+  if [ $fsize -ge 500 ]
+    then
+      echo "$fname 파일은 파일 사이즈가 큽니다" | tee -a ${dir}/test.log
+      echo "$fname 파일을 복사하겠습니다"  | tee -a ${dir}/test.log
+      cp $fname ${dir}/backup
+    else
+      echo "$fname 파일은 파일 사이즈가 작아서 복사하지 않겠습니다" | tee -a ${dir}/test.log
+  fi
+done
+
+vend=`date +%Y/%m/%d_%H:%M:%S`
+echo "로깅 끝시간 : $vend" | tee -a ${dir}/test.log
+   
+
+9. while 문
+조건이 참일 경우 반복 수행
+
+while [ 조건 ]
+do
+  반복할 문장
+done
+
+[ 연습 문제 - while_hap.sh ]
+1부터 100까지의 총 합을 아래와 같이 리턴
+1 + ... + 100 = 5050
+
+
+#!/bin/sh
+
+# 1부터 100까지 더한 값 출력
+i=1
+
+while [ $i -le 100 ]
+do
+  hap=`expr $hap + $i`
+  i=`expr $i + 1`
+done
+
+echo "1 + ... + 100 = $hap"
+
+
+
+
+[ 연습 문제 - while_passwd.sh ]
+사용자로부터 패스워드를 입력받고 
+입력받은 패스워드가 틀리면 계속 묻는 프로그램 작성
+단, 5회 틀리면 프로그램 즉시 종료
+
+#!/bin/sh
+
+echo "패스워드를 입력하세요 : \c"
+read passwd
+
+cnt=0
+while [ $passwd != "oracle" ]
+do
+  cnt=`expr $cnt + 1`
+  if [ $cnt -eq 5 ]
+  then
+    break
+  fi
+  echo "잘못된 패스워드입니다. 다시 입력하세요"
+  read passwd
+done
+
+echo "프로그램을 종료합니다"
+
