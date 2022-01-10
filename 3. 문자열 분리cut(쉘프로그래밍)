@@ -1,0 +1,115 @@
+5. 문자열 분리(cut)
+파일의 각 라인 혹은 명령어의 결과(라인) 혹은 문자열의 일부 추출
+분리 구분기호 사용 가능
+
+-b : byte 지정하여 일부 슬라이스
+-c : character 지정하여 일부 슬라이스
+-d : 분리구분기호
+-f : 추출할 필드 번호
+
+echo "abcde" | cut -b1-3    # 1바이트부터 3바이트까지 추출
+echo "abcde" | cut -c1-3    # 첫번째부터 세번째 까지 추출
+echo "abcde" | cut -c1,4     # 첫번째 글자와 네번째 글자 추출
+
+cat /etc/passwd | cut -d":" -f1 
+cut -d":" -f1 /etc/passwd
+
+- 주의 : 매 라인마다 필드 구분자가 동일하지 않은 경우 한번에 처리 불가
+          => 한 행씩 처리되도록 반복문을 사용하여 처리!!!
+
+
+[ 연습 문제 1 - if_find_file.sh ]
+사용자로부터 파일명과 디렉토리명을 연이어 전달받고(홈디렉토리(~) 사용 불가)
+해당 디렉토리로부터 입력받은 파일을 찾아
+파일이 없으면 해당 파일이 없다,
+있으면 해당 파일의 내용을 아래와 같이 출력
+───── bc.sh ──────
+소유자 : scott                    
+파일크기 : 212                    
+──────────────
+
+
+#!/bin/sh
+
+echo "파일명을 입력하세요 : \c"
+read fname
+
+echo "디렉토리명을 입력하세요(절대경로) : \c"
+read dname
+
+if [ -d $dname ] 
+  then
+    echo "$dname 디렉토리가 존재합니다"
+    echo "$fname 파일을 찾는중입니다..."
+    sleep 5
+  else
+    echo "$dname 디렉토리가 없습니다."
+    echo "프로그램을 종료하겠습니다"
+    exit 1
+fi
+   
+if [ -f $dname/$fname ]
+  then
+    vowner=`ls -l $dname/$fname | cut -d" " -f3`
+    fsize=`ls -l $dname/$fname | cut -d" " -f5`
+    echo
+    echo "$dname 에 $fname 파일이 있습니다"
+    echo "────────── $fname ────────── " 
+    echo "소유자 : $vowner"     
+    echo "파일크기 : $fsize"    
+    echo "────────────────────────────" 
+  else
+    echo "$dname 에 $fname 파일이 없습니다"
+fi
+
+
+
+[ 연습 문제 2 - if_file_cp.sh ]
+사용자로부터 파일명과 디렉토리명을 연이어 전달받고(홈디렉토리(~) 사용 불가)
+해당 디렉토리로부터 입력받은 파일을 찾아
+파일 사이즈를 확인하고 파일사이즈가 100이상인 경우는
+/home/scott/linux/ch8/backup 디렉토리에 복사
+(디렉토리 없으면 새로 생성)
+┌──────────────────────┐
+│ 1) user add          │
+│ 2) user del          │
+│ 3) user check        │
+└──────────────────────┘
+
+#!/bin/sh
+
+echo "파일명을 입력하세요 : \c"
+read fname
+
+echo "디렉토리명을 입력하세요(절대경로) : \c"
+read dname
+
+if [ -d $dname ] 
+  then
+    echo "$dname 디렉토리가 존재합니다"
+    echo "$fname 파일을 찾는중입니다..."
+    sleep 5
+  else
+    echo "$dname 디렉토리가 없습니다."
+    echo "프로그램을 종료하겠습니다"
+    exit 1
+fi
+   
+if [ -f $dname/$fname ]
+  then
+    fsize=`ls -l $dname/$fname | cut -d" " -f5`
+    if [ $fsize -ge 100 ]
+      then
+        # 디렉토리 확인
+        if [ -d /home/scott/linux/ch8/backup ]
+          then
+            echo "백업 디렉토리 확인완료"
+          else
+            mkdir -p /home/scott/linux/ch8/backup
+        fi
+        cp $dname/$fname /home/scott/linux/ch8/backup
+        echo "$fname 파일을 복사하였습니다"
+    fi
+  else
+    echo "$dname 에 $fname 파일이 없습니다"
+fi
