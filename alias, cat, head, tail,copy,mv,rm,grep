@@ -1,0 +1,69 @@
+[ alias ]
+alias c='clear'
+: clear하고 싶을 때  c쓰면 됨
+
+
+cat : 
+more : 파일 내용을 화면 단위로 출력
+ㄴ enter : 한줄씩
+ㄴ space : 한쪽씩
+
+head -5 /etc/passwd
+: 앞에 5줄만 보기
+
+tail -10 /etc/passwd
+: 마지막 10줄만 보기
+
+tail -n +10 /etc/passwd
+: 10줄부터 끝까지
+
+head +10 /etc/passwd
+: 10줄 부터 보기
+
+less /etc/passwd : more랑 똑같지만, 이전 커서로 돌아갈수있음
+
+
+touch test.log
+echo "test...." > test.log 
+: redirection방법(>)  "test..." 를 test.log을 열지 않고 보냄
+ㄴ cat test.log로 확인 가능
+ㄴ echo = print
+
+ㄴ이미 실행 후 ...
+> : 덮어쓰기
+>> : 이어쓰기
+
+Ctrl + c : 중단 신호
+
+[ copy(cp) : 파일 copy (not directory) - 원본은 원위치에도 존재 ]
+alias cp='cp -i'
+: cp:overwrite '---'? 물어봐줌 (copy할때 주의시켜줌!!)
+
+cp -r : 디렉토리 cp
+cp file2 test : 파일 형식을 디렉터리에 cp => copy하는 것
+cp file2 test/file3 : test밑에 file3이라는 이름으로 file2를 copy
+cp file2 file3 test : test(디렉토리)로 file2 file3 동시에 copy
+cp file2 file3 file4 : 불가능!!!!
+ㄴ 무조건 마지막 타켓은 디렉토리 
+
+[ mv  : 위치 이동 시키기 - 원본 이동 ]
+mv 파일명 파일명 : rename기능
+mv 파일명 디렉토리 : 잘라 붙여넣기(이동시킴)
+mv -i file4 file33 
+ㄴmv: overwrite 'file33'? 물어봐줌
+
+[ rm : 파일 삭제 기능 ]
+rm -i : 대화식으로 지정한 파일을 정말 삭제할 것인지 확인
+rm -r : 디렉터리 삭제
+
+[ grep : 파일 내용 검색하기 ] **********
+-지정 패턴을 포함하는 행을 찾는다
+	• grep 패턴 파일명 
+	• grep -i : 대소문자를 모두 검색
+	• grep -l : 해당 패턴을 포함하는 파일 이름 출력
+	ㄴ grep -l python * : python이라는 단어가 들어간 파일 출력
+	
+	• grep -w : 정확한 단어를 포함할때만 출력 (패턴X)
+	• grep -n : 행 번호 출력
+	• grep -v : 제거할 목적
+
