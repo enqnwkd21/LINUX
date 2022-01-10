@@ -1,0 +1,116 @@
+15. 비대화형 편집기(sed)
+파일을 열지 않고 파일에 대한 편집을 수행
+
+[문법]
+
+sed [ 옵션 ] '명령어' 파일명
+cat 파일명 | sed [ 옵션 ] '명령어'
+
+[ 옵션 ] 
+-e : 다중 편집
+sed -e '1,3d' -e 's/oracle/1234/g' test.txt   # 1~3라인 삭제 후 oracle을 1234로 치환
+
+-n : 해당 결과만 출력하기
+sed -n '1p' test.txt           # 첫 번째 라인만 출력
+
+[ 명령어 : 편집 종류 ]
+- p : 출력
+sed '1p' test.txt               # 첫 번째 라인 출력(본문과 함께)
+sed -n '1p' test.txt           # 첫 번째 라인만 출력
+sed '/tom/p' test.txt         # tom 단어가 포함된 라인 출력(본문과 함께)
+sed -n '/tom/p' test.txt      # tom 단어가 포함된 라인만 출력
+
+- a : 삽입(append)
+sed '1a\test' test.txt         # 첫 번째 다음 라인에 test 삽입
+sed '/tom/a\test' test.txt   # tom 단어가 포함된 라인 밑에 test 삽입
+
+- i : 삽입(insert)
+sed '1i\test' test.txt      # 첫 번째 라인에 test 삽입
+sed '/tom/i\test' test.txt   # tom 단어가 포함된 라인에 test 삽입
+
+- d : delete
+sed '1d' test.txt         # 첫번째 라인 삭제
+sed '2,$d' test.txt       # 두번째 라인부터 끝까지 삭제
+sed '/tom/d' test.txt   # tom이 포함된 라인 삭제
+sed '/tom/!d' test.txt  # tom이 포함되지 않은 라인 삭제
+
+- r : 불러오기(read)
+sed '1r bc.sh' test.txt           # 첫번째 라인에 bc.sh 파일 내용을 불러오기
+
+- s : 치환
+sed 's/scott/hr/' test.txt              # scott을 hr로 변경
+sed 's/oracle/1234/g' test.txt       # 각 라인의 모든 oracle을 1234로 변경
+sed 's/oracle//g' test.txt             # 각 라인의 모든 oracle을 삭제
+sed '1!s/abc/123/' test.txt           # 첫번째 라인을 제외한 나머지에서 치환
+
+
+[ 연습 문제 ]
+1. 1~3라인에 주석처리
+sed '1,3s/^/#/' test.txt
+
+2. 주석 해제
+sed 's/^#//' test2.txt
+
+3. 5~8라인 두 칸 들여쓰기
+sed '5,8s/^/  /' test.txt
+
+4. 빈줄 삭제
+sed '/^$/d' test.txt
+
+5. 모든 라인에 한 칸 내려쓰기
+sed 'a\ ' test.txt
+
+
+
+[ 연습 문제 - sed.sh ] 
+파일명, 찾을문자열, 바꿀문자열을 사용자로부터 입력받아서
+파일에서 찾을문자열을 바꿀문자열로 모두 변경한
+변경 전 후를 화면에 보여주고
+변경된 내용을 저장할지를 사용자에게 물은 뒤 처리
+
+#!/bin/sh
+
+. /home/scott/linux/ch8/color.env
+
+clear
+echo "파일명을 입력하세요 : \c"
+read fname
+
+echo "찾을 문자열을 입력하세요 : \c"
+read vbefore
+
+echo "바꿀 문자열을 입력하세요 : \c"
+read vafter
+
+clear
+echo "┌────────────────────────────────┐"
+echo "│ 파일 편집 프로그램             │"
+echo "│ 파 일 명   : $fname \t\t │" 
+echo "│ 찾을문자열 : $vbefore  \t\t │"
+echo "│ 바꿀문자열 : $vafter    \t\t │"
+echo "└────────────────────────────────┘"
+echo
+echo "┌────────────────────────────────┐"
+echo "│         변     경     전       │"
+echo "└────────────────────────────────┘"
+cat $fname | sed 's/'$vbefore'/'${blue}$vbefore${nc}'/g'
+echo
+echo "┌────────────────────────────────┐"
+echo "│         변     경     후       │"
+echo "└────────────────────────────────┘"
+cat $fname | sed 's/'$vbefore'/'${red}$vafter${nc}'/g'
+sed 's/'$vbefore'/'$vafter'/g' $fname > ${fname}_imsi
+
+echo
+echo "해당사항을 저장할까요? (y|n) : \c"
+read ans
+
+case $ans in
+[Yy]*)
+  mv ${fname}_imsi $fname
+  echo "변경된 내용이 저장되었습니다";;
+[Nn]*)
+  echo "변경을 취소하였습니다";;
+*)
+  echo "잘못된 입력입니다.";;
+esac
