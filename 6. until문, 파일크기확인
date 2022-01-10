@@ -1,0 +1,94 @@
+10. until문
+while문과 동일하게 사용
+조건이 거짓일 경우 반복 수행(참일때까지)
+
+until [ 조건 ]
+do
+  반복할 문장
+done
+
+
+11. 파일 크기 확인
+wc 파일명
+
+[ 출력 형식 ]
+라인수 단어수 글자수 파일명
+
+[ 옵션 ] 
+-l : 라인수만 출력
+-w : 단어수만 출력
+-c : 글자수만 출력
+
+
+[ 연습 문제 - file_sum.sh ]
+*.sh 파일을 하나의 파일(total.sh)로 합치기
+
+######### bc.sh ###########
+본문
+
+########## for.sh ##########
+본문
+
+
+#!/bin/sh
+
+# 환경변수 불러오기
+. /home/scott/linux/ch8/color.env
+
+# *.sh 파일을 불러와 total.sh 파일로 합치기
+echo "쉘 스크립트 종합" >> total.sh
+
+for fname in $(ls *.sh)
+do
+  if [ "$fname" = "total.sh" ]
+  then
+    echo > /dev/null
+  else
+    echo "######### ${red}$fname${nc} ##########" >> total.sh
+    cat $fname >> total.sh
+    echo >> total.sh
+  fi
+done
+
+
+
+[ 연습문제 - wc.sh ]
+*.sh에 대해 라인사이즈가 50 이상인 파일에 대해
+big_file.txt 라는 파일에
+위 5라인과 파일이름이 동시에 기록되도록 하여라.
+
+####### bc.sh ########
+1라인 내용
+2라인 내용
+3라인 내용
+4라인 내용
+5라인 내용
+.....
+
+########## for.sh ##########
+1라인 내용
+2라인 내용
+3라인 내용
+4라인 내용
+5라인 내용
+.....
+
+
+#!/bin/sh
+
+# 라인사이즈가 50 이상인 파일에 대해 파일의 첫 5줄을 기록
+
+# 환경변수 불러오기
+. /home/scott/linux/ch8/color.env
+
+for fname in $(ls *.sh)
+do
+  vline=`cat $fname | wc -l`
+  if [ $vline -ge 50 ]
+  then
+    echo "####### ${red}$fname${nc} ########" >> big_file.txt
+    head -5 $fname >> big_file.txt
+    echo "..........." >> big_file.txt
+    echo >> big_file.txt
+  fi
+done
