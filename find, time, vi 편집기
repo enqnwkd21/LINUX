@@ -1,0 +1,93 @@
+
+# find [타겟 디렉토리]
+-- 파일 찾기 명령어(파일 이름으로 검색)
+find . -name file ( .은 현재 디렉토리)
+: 'file'과 정확하게 일치하는 단어를 찾아줌
+
+find . -name "*file*"
+: 'file'을 포함하는 모든 디렉토리/파일 찾아줌 (하위 디렉터릭까지 출력)
+
+find . -name "file*" -mtime +3
+: +3 : 4일이 지난 "file"포함하는 파일 출력
+: +0 : 하루가 지난
+
+find . -maxdepth 1 -name "file*"
+: 현재 디렉토리에 있는 'file*'만 찾아줌
+
+-- type [파일 종류] (파일 종류로 검색)
+find . -name :"test*" -type d : test 포함하는 디렉토리 찾기
+find . -name :"test*" -type f : test 포함하는 파일찾기
+
+find . -maxdepth 1 -name "file*" -exec ls -l {} \; 
+: -exec {} \; : 검색된 파일에 명령어 전달 
+: -exec는 실행의 옵션이니 ; 필요! \는 ;의 일반기호화(명령어의 종료) => 마무리해야지! 
+: find의 결과는 print인데 그 결과를 {}에 담아주는!! print는 | 적용 불가
+-rw-rw-r-- 1 scott scott 2 11월 18 15:24 ./file33
+-rw-rw-r-- 1 scott scott 2 11월 18 15:24 ./file4
+-rw-rw-r-- 1 scott scott 0 11월 16 14:00 ./file2
+-rw-rw-r-- 1 scott scott 7 11월 10 14:00 ./file1
+-rw-rw-r-- 1 scott scott 0 11월 18 15:36 ./file3
+
+--실행 후
+touch file1 file2 file3 file4 file5
+touch -t 11181400 file1
+touch -t 11180900 file2
+touch -t 11170900 file3
+touch -t 11160900 file4
+touch -t 11150900 file5
+
+-- 결과 보기
+find . -maxdepth 1 -name "file*" -mtime -1
+: - => 생성된 파일이 아직 하루가 지나지 않은 file 출력 (하루동안 => 최신 파일 확인)
+: + => 며칠이 지난
+: + 는 이전(0부터 시작), -는 동안(1부터 시작)
+
+
+
+-- time 옵션
+atime 접근시간
+ctime 실제 파일 수정시간
+mtime 화면에 보이는 시간(last touch..? just 터치터치)
+
+# [ 연습 문제 ]
+아래 내용을 실행 한 후
+cd ~/linux/ch2
+touch file1 file2 file3 file4 file5
+touch -t 11181400 file1
+touch -t 11180900 file2
+touch -t 11170900 file3
+touch -t 11160900 file4
+touch -t 11150900 file5
+Q. ~/linux/ch2에서 하루가 지난 파일을 ~/linux/ch2/test 디렉토리로 이동
+=>ch2에서 시작
+A. find . -maxdepth 1 -name "file*" -mtime +0 -exec mv {} ./test \;
+
+# vi 편집기 
+	• 마지막 행모드 :q! = 저장하지 않고 종료
+	• 마지막 행모드 :w! = 저장하고 종료
+입력 모드 : 내가 편집을 할 때 새로운 텍스트를 쓰거나, 지울때 필요
+명령 모드 : 커서의 이동, 입력 모드 제외의 모든 것, 글자 지우기, 단어지우기, 커서 이동, 잘라내기, 붙여넣기,
+복붙, 등등
+	- H왼쪽, J아래, K위, L오른쪽
+	- 화살표 사용도 가능
+	- X : 지우기 (커서 놓고 실행해야함)-입력모드에 써놓고 다시 명령보드로 전환 후 x로 지우기
+	-   or 입력모드에서 backspace하고 esc누르면 지워짐
+	- U : 현재 커서에 있는 행위 모두 취소
+	- u : 이전 실행 취소
+	- (n)dd : 라인 지우는것 
+	- p : 복사
+	- (n)ddp : 잘라내고 붙여넣기
+	- (n)yyp : 복사 붙여넣기
+	-  r : 한글자에 대한 치환(수정)
+	-  cw : 한번에 수정하기 
+	- :set number : 행번호 출력
+명령 모드에서 esc를 누르면 
+마지막 행모드는 치환, 검색, 저장, 종료, 커서의 이동을 할 수 있음
+
+--
+최초로 들어가면 명령모드, 입력모드로 전환해야 입력 가능
+입력 모드 전환 방법: i (insert) , a (append), o(다음라인에 입력하겠다)
+다시 빠져나가는 법 : esc키 (입력 모드 -> 명령 모드)
+--
+%s : 전체범위 치환
+1,$s : 전체범위 치환
