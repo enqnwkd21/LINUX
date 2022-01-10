@@ -1,0 +1,53 @@
+4. 조건문
+if [ 조건 ] 
+  then
+     참일때 실행 문장
+  else
+     거짓 시 실행 문장
+fi
+
+-- 들여쓰기 규칙 자유
+-- 조건은 일반적을 대괄호와 함께 전달하나 조건의 형태가 명령어일 경우 대괄호 제외
+
+[ 예제 - if1.sh ] 
+사용자로부터 파일명을 입력받아 현재디렉토리에서 파일을 찾아
+없으면 없다라는 메세지,
+있으면 파일의 상세 내용(ls -l) 결과 리턴
+
+#!/bin/sh
+
+echo "파일을 찾는 쉘 스크립트입니다...."
+echo "찾을 파일명을 입력하세요 : \c"
+read fname
+
+if [ -f $fname ]
+  then
+    echo "$fname 파일이 존재합니다"
+    ls -l $fname
+  else
+    echo "$fname 파일이 존재하지 않습니다"
+fi
+
+echo "프로그램을 종료합니다"
+
+
+[ 예제 - if_userfind.sh ] 
+사용자로부터 사용자 이름(계정명)을 입력받아
+없으면 해당 유저가 없다라는 메세지,
+있으면 해당 유저가 있다라는 메시지 리턴
+
+#!/bin/sh
+
+echo "유저를 찾는 쉘 스크립트입니다...."
+echo "찾을 유저명을 입력하세요 : \c"
+read uname
+
+grep -w ^$uname /etc/passwd > /dev/null
+if [ $? -eq 0 ] 
+  then
+    echo "$uname 유저가 존재합니다"
+  else
+    echo "$uname 유저가 존재하지 않습니다"
+fi
+
+echo "프로그램을 종료합니다"
